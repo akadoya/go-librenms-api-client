@@ -1,1 +1,3 @@
-# go-librenms-api-client
+## Librenms API Client (Go)
+
+Golang Librenms API client

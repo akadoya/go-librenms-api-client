@@ -1,43 +1,25 @@
 package librenms
 
-// Order -
-type Order struct {
-	ID    int         `json:"id,omitempty"`
-	Items []OrderItem `json:"items,omitempty"`
+// AlertRule -
+type AlertRule struct {
+	ID          int          `json:"id"`
+	Name        string       `json:"name"`
+	Rule        string       `json:"rule"`
+	Severity    string       `json:"severity"`
+	Extra       string       `json:"extra"`
+	Disabled    int          `json:"disabled"`
+	Query       string       `json:"query"`
+	Builder     string       `json:"builder"`
+	Proc        string       `json:"proc"`
+	InvertMap   int          `json:"invert_map"`
+	Devices     []int        `json:"device_ids"`
+//	Devices     []Device     `json:"devices"`
 }
 
-// OrderItem -
-type OrderItem struct {
-	Coffee   Coffee `json:"coffee"`
-	Quantity int    `json:"quantity"`
-}
-
-// Coffee -
-type Coffee struct {
-	ID          int                `json:"id"`
-	Name        string             `json:"name"`
-	Teaser      string             `json:"teaser"`
-	Collection  string             `json:"collection"`
-	Origin      string             `json:"origin"`
-	Color       string             `json:"color"`
-	Description string             `json:"description"`
-	Price       float64            `json:"price"`
-	Image       string             `json:"image"`
-	Ingredient  []CoffeeIngredient `json:"ingredients"`
-}
-
-// Ingredient -
-type CoffeeIngredient struct {
-	ID       int    `json:"ingredient_id"`
+/* Device -
+type Device struct {
+	ID       int    `json:"rule_id"`
 	Name     string `json:"name"`
-	Quantity int    `json:"quantity"`
-	Unit     string `json:"unit"`
+	...
 }
-
-// Ingredient -
-type Ingredient struct {
-	ID       int    `json:"id"`
-	Name     string `json:"name"`
-	Quantity int    `json:"quantity"`
-	Unit     string `json:"unit"`
-}
+*/

@@ -1,76 +1,55 @@
 package librenms
 
 import (
+	"crypto/tls"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
 )
 
-// HostURL - Default librenms URL
-const HostURL string = "http://localhost:19090"
+// BaseURL - Default librenms base API endpoint
+const BaseURL string = "http://localhost:8000/api/v0"
 
 // Client -
 type Client struct {
-	HostURL    string
+	BaseURL    string
 	HTTPClient *http.Client
 	Token      string
-	Auth       AuthStruct
-}
-
-// AuthStruct -
-type AuthStruct struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
-// AuthResponse -
-type AuthResponse struct {
-	UserID   int    `json:"user_id`
-	Username string `json:"username`
-	Token    string `json:"token"`
 }
 
 // NewClient -
-func NewClient(host, username, password *string) (*Client, error) {
+func NewClient(api_token *string, url *string, insecure *bool) (*Client, error) {
+
+	tr := &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: *insecure},
+	}
 	c := Client{
-		HTTPClient: &http.Client{Timeout: 10 * time.Second},
+		HTTPClient: &http.Client{Timeout: 10 * time.Second, Transport: tr},
 		// Default librenms URL
-		HostURL: HostURL,
+		BaseURL: BaseURL,
 	}
 
-	if host != nil {
-		c.HostURL = *host
+	if url != nil {
+		c.BaseURL = *url
 	}
 
-	// If username or password not provided, return empty client
-	if username == nil || password == nil {
+	// If api_token not provided, return empty client
+	if api_token == nil {
 		return &c, nil
 	}
-
-	c.Auth = AuthStruct{
-		Username: *username,
-		Password: *password,
-	}
-
-	ar, err := c.SignIn()
-	if err != nil {
-		return nil, err
-	}
-
-	c.Token = ar.Token
 
 	return &c, nil
 }
 
-func (c *Client) doRequest(req *http.Request, authToken *string) ([]byte, error) {
+func (c *Client) doRequest(req *http.Request, apiToken *string) ([]byte, error) {
 	token := c.Token
 
-	if authToken != nil {
-		token = *authToken
+	if apiToken != nil {
+		token = *apiToken
 	}
 
-	req.Header.Set("Authorization", token)
+	req.Header.Set("X-Auth-Token", token)
 
 	res, err := c.HTTPClient.Do(req)
 	if err != nil {

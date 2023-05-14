@@ -39,6 +39,7 @@ func NewClient(api_token *string, url *string, insecure *bool) (*Client, error) 
 		return &c, nil
 	}
 
+	c.Token = *api_token
 	return &c, nil
 }
 

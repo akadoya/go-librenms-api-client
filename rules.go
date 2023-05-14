@@ -3,7 +3,6 @@ package librenms
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"strings"
 )

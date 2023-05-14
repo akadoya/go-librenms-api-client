@@ -3,6 +3,7 @@ package librenms
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strings"
 )
@@ -19,17 +20,22 @@ func (c *Client) GetAlertRules(authToken *string) ([]AlertRule, error) {
 		return nil, err
 	}
 
-	AlertRules := []AlertRule{}
-	err = json.Unmarshal(body, &AlertRules)
+	rules := []AlertRule{}
+
+	err = json.Unmarshal(body, &rules)
 	if err != nil {
 		return nil, err
 	}
 
-	return AlertRules, nil
+	return rules, nil
 }
 
 // GetAlertRule - Returns specific Alert Rule
 func (c *Client) GetAlertRule(ruleID string, authToken *string) ([]AlertRule, error) {
+	var intermediate struct {
+		Status string        `json:"status"`
+		Rules  []AlertRule   `json:"rules"`
+	}
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/rules/%s", c.BaseURL, ruleID), nil)
 	if err != nil {
 		return nil, err
@@ -40,13 +46,13 @@ func (c *Client) GetAlertRule(ruleID string, authToken *string) ([]AlertRule, er
 		return nil, err
 	}
 
-	AlertRules := []AlertRule{}
-	err = json.Unmarshal(body, &AlertRules)
+	// read rules list from response body
+	err = json.Unmarshal(body, &intermediate)
 	if err != nil {
 		return nil, err
 	}
 
-	return AlertRules, nil
+	return intermediate.Rules, nil
 }
 
 // CreateAlertRule - Create new AlertRule
